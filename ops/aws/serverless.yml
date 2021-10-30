@@ -1,0 +1,38 @@
+service: soflux-monolith
+
+custom:
+  prune:
+    automatic: true
+    number: 3
+  serverless-layers:
+    dependenciesPath: ../../package.json
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-central-1
+  profile: default
+  stage: development
+plugins:
+  - serverless-layers
+  - serverless-offline
+
+package:
+  individually: true
+  include:
+    - ../../dist/apps/monolith/**
+  exclude:
+    - '**'
+
+functions:
+  index:
+    handler: dist/apps/api/main.handler
+    events:
+      - http:
+          cors: true
+          path: '/'
+          method: any
+      - http:
+          cors: true
+          path: '{proxy+}'
+          method: any

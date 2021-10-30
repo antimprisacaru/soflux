@@ -1,4 +1,9 @@
 {
-  "version": 2,
-  "projects": {}
+    "version": 2,
+    "projects": {
+        "client": "apps/client",
+        "client-e2e": "apps/client-e2e",
+        "core": "libs/core",
+        "monolith": "apps/monolith"
+    }
 }
