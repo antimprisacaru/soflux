@@ -1,0 +1,37 @@
+.card {
+  height: 548px;
+}
+
+.card-description {
+  height: 86px;
+}
+
+.ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 210px;
+  height: 26px;
+  margin-right: -50px;
+  margin-top: 50px;
+  padding-left: 56px;
+  -ms-transform: rotate(45deg); /* IE 9 */
+  -webkit-transform: rotate(45deg); /* Safari prior 9.0 */
+  transform: rotate(45deg); /* Standard syntax */
+}
+
+.instagram {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.facebook {
+  background-color: #3b5998;
+}
+
+.twitch {
+  background-color: #6441a5;
+}
+
+.youtube {
+  background-color: #ff0000;
+}

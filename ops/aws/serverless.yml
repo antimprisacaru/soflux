@@ -1,21 +1,21 @@
-service: soflux-monolith
+service: soflux
 
-custom:
-  prune:
-    automatic: true
-    number: 3
-  serverless-layers:
-    dependenciesPath: ../../package.json
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-offline
 
 provider:
   name: aws
+  tracing:
+    apiGateway: true
   runtime: nodejs12.x
+  memorySize: 256
+  stage: ${opt:stage, 'dev'}
   region: eu-central-1
-  profile: default
-  stage: development
-plugins:
-  - serverless-layers
-  - serverless-offline
+  environment:
+    USERS_TABLE_NAME: ${self:custom.UsersTable.name}
+  iamRoleStatements:
+    - ${file(resources/dynamo-db-table-iam.yml):DynamoDBTableIAM}
 
 package:
   individually: true
@@ -24,9 +24,29 @@ package:
   exclude:
     - '**'
 
+resources:
+  Resources:
+    UsersTable: ${file(resources/users-table.yml):UsersTable}
+
+custom:
+  prune:
+    automatic: true
+    number: 3
+  serverless-layers:
+    dependenciesPath: ../../package.json
+  dotenv:
+    path: ../../.env
+    exclude:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_REGION
+  UsersTable:
+    name: !Ref UsersTable
+    arn: !GetAtt UsersTable.Arn
+
 functions:
   index:
-    handler: dist/apps/api/main.handler
+    handler: ../../dist/apps/monolith/main.handler
     events:
       - http:
           cors: true

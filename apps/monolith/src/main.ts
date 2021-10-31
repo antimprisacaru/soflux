@@ -5,6 +5,7 @@ import { AppModule } from './app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { ServerlessNestjsApplicationFactory } from 'serverless-lambda-nestjs';
 import { APIGatewayProxyHandler } from 'aws-lambda';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -15,7 +16,8 @@ async function bootstrap() {
         origin: '*',
         allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
     });
-    const port = process.env.PORT || 3333;
+    app.use(cookieParser());
+    const port = process.env.monolith_port || 3333;
     await app.listen(port, () => {
         Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
         Logger.log(`Running in ${config.get('environment')} mode`);

@@ -16,7 +16,8 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@soflux/core": ["libs/core/src/index.ts"]
+            "@soflux/core": ["libs/core/src/index.ts"],
+            "@soflux/gulp": ["libs/gulp/src/index.ts"]
         }
     },
     "exclude": ["node_modules", "tmp"]
