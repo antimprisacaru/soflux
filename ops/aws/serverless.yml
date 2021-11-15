@@ -10,10 +10,10 @@ provider:
     apiGateway: true
   runtime: nodejs12.x
   memorySize: 256
-  stage: ${opt:stage, 'dev'}
+  stage: ${env:STAGE}
   region: eu-central-1
   environment:
-    USERS_TABLE_NAME: ${self:custom.UsersTable.name}
+    USERS_TABLE_NAME: ${self:resources.SofluxUsersTable.name}
   iamRoleStatements:
     - ${file(resources/dynamo-db-table-iam.yml):DynamoDBTableIAM}
 
@@ -26,7 +26,10 @@ package:
 
 resources:
   Resources:
-    UsersTable: ${file(resources/users-table.yml):UsersTable}
+    SofluxUsersTable: ${file(resources/users-table.yml):SofluxUsersTable}
+    SofluxCognitoUserPool: ${file(resources/cognito-user-pool.yml):SofluxCognitoUserPool}
+    SofluxCognitoUserPoolClient: ${file(resources/cognito-user-pool-client.yml):SofluxCognitoUserPoolClient}
+
 
 custom:
   prune:
@@ -36,13 +39,9 @@ custom:
     dependenciesPath: ../../package.json
   dotenv:
     path: ../../.env
-    exclude:
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY
-      - AWS_REGION
-  UsersTable:
-    name: !Ref UsersTable
-    arn: !GetAtt UsersTable.Arn
+  SofluxUsersTable:
+    name: !Ref SofluxUsersTable
+    arn: !GetAtt SofluxUsersTable.Arn
 
 functions:
   index:

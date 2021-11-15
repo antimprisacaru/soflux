@@ -1,6 +1,9 @@
 import { execAsync } from './utils';
 
 export default async function serveMonolith(platform: string, sls = false): Promise<void> {
+    process.env.CLOUD_PROVIDER = platform;
+    process.env.STAGE = 'dev';
+
     switch (platform) {
         case 'aws':
             if (sls) {

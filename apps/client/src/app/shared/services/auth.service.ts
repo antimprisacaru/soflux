@@ -10,9 +10,9 @@ export class AuthService {
 
     async login(input: UserLoginInput): Promise<void> {
         return await this.graphQL.client
-            .query({
-                query: gql`
-                    query ($email: String!, $password: String!) {
+            .mutate({
+                mutation: gql`
+                    mutation ($email: String!, $password: String!) {
                         login(email: $email, password: $password)
                     }
                 `,

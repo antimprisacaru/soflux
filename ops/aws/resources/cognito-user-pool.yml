@@ -1,0 +1,4 @@
+SofluxCognitoUserPool:
+  Type: AWS::Cognito::UserPool
+  Properties:
+    UserPoolName: SofluxUserPool-${sls:stage}

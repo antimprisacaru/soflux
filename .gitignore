@@ -35,6 +35,7 @@ yarn-error.log
 testem.log
 /typings
 .env
+libs/core/src/lib/env/aws.config.yml
 
 # System Files
 .DS_Store

@@ -1,7 +1,7 @@
-UsersTable:
+SofluxUsersTable:
   Type: AWS::DynamoDB::Table
   Properties:
-    TableName: UsersTable-${sls:stage}
+    TableName: SofluxUsersTable-${sls:stage}
     BillingMode: PAY_PER_REQUEST
     AttributeDefinitions:
       - AttributeName: id

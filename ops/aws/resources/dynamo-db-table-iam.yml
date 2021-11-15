@@ -7,4 +7,4 @@ DynamoDBTableIAM:
     - dynamodb:UpdateItem
     - dynamodb:Query
   Resource:
-    - Fn::GetAtt: [UsersTable, Arn]
+    - Fn::GetAtt: [SofluxUsersTable, Arn]

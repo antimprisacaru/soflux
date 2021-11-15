@@ -17,7 +17,7 @@ export class GraphQLService {
 
     init(): void {
         const httpLink = createHttpLink({
-            uri: 'https://60ck6o71ag.execute-api.eu-central-1.amazonaws.com/api',
+            uri: '/graphql',
             credentials: 'include'
         });
 

@@ -1,0 +1,7 @@
+SofluxCognitoUserPoolClient:
+  Type: AWS::Cognito::UserPoolClient
+  Properties:
+    ClientName: SofluxUserPoolClient-${sls:stage}
+    GenerateSecret: false
+    UserPoolId:
+      Ref: "SofluxCognitoUserPool"

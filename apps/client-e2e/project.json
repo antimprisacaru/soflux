@@ -7,8 +7,7 @@
             "executor": "@nrwl/cypress:cypress",
             "options": {
                 "cypressConfig": "apps/client-e2e/cypress.json",
-                "devServerTarget": "client:serve:development",
-                "tsConfig": "apps/client-e2e/tsconfig.json"
+                "devServerTarget": "client:serve:development"
             },
             "configurations": {
                 "production": {
