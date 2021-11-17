@@ -23,7 +23,10 @@ export class GraphQLService {
 
         const errorLink = onError(({ graphQLErrors, networkError }) => {
             if (graphQLErrors) {
-                graphQLErrors.map(({ message, path }) => {
+                graphQLErrors.map(({ message, path, extensions }) => {
+                    if (extensions.code === 'UNAUTHENTICATED') {
+                      return;
+                    }
                     if (!ignoredErrors.find(err => err === path[0])) {
                         this.store.dispatch(new HttpError(message));
                     }

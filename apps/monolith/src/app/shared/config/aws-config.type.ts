@@ -1,1 +1,1 @@
-export type AwsConfigType = 'AWS_REGION' | 'AWS_CLIENT_ID' | 'AWS_USER_POOL_ID';
+export type AwsConfigType = 'clientId' | 'userPoolId' | 'usersTable' | 'region';

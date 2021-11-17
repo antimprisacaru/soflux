@@ -24,6 +24,7 @@ async function bootstrap() {
     });
     const config = app.get(ConfigService);
     app.enableCors({
+        credentials: true,
         origin: '*',
         allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
     });

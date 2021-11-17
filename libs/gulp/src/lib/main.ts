@@ -12,7 +12,7 @@ const serverless_DEPLOY_OPTIONS: minimist.Opts = {
     boolean: ['skip-build'],
     default: {
         provider: 'aws',
-        stage: 'dev',
+        stage: 'develop',
         'skip-build': false
     }
 };

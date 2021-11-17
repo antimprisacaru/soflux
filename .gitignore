@@ -40,3 +40,4 @@ libs/core/src/lib/env/aws.config.yml
 # System Files
 .DS_Store
 Thumbs.db
+/libs/core/src/lib/env/

@@ -28,7 +28,7 @@ export class AuthService {
         return await this.graphQL.client
             .mutate({
                 mutation: gql`
-                    mutation ($user: UserRegistrationInputType!) {
+                    mutation ($user: UserRegistrationInputDto!) {
                         signUp(user: $user)
                     }
                 `,

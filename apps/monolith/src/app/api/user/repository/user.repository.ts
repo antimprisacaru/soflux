@@ -1,7 +1,7 @@
 import User from '../model/user.model';
-import { CloudConfig } from '../../../shared/config/cloud-config';
 import { AwsUserRepository } from './aws-user.repository';
 import { GoogleUserRepository } from './google-user.repository';
+import { ConfigService } from '@nestjs/config';
 
 export interface UserRepository {
     findUser(id: string): Promise<User>;
@@ -12,15 +12,15 @@ export interface UserRepository {
 
 export const UserRepositoryFactory = {
     provide: 'UserRepository',
-    useFactory: (config: CloudConfig) => {
-        switch (config.provider()) {
+    useFactory: (configService: ConfigService) => {
+        switch (configService.get<string>('cloud_provider')) {
             case 'aws':
-                return new AwsUserRepository(config);
+                return new AwsUserRepository(configService);
             case 'google':
-                return new GoogleUserRepository(config);
+                return new GoogleUserRepository(configService);
             default:
                 throw new Error(`No repository found corresponding to input given.`);
         }
     },
-    inject: [CloudConfig]
+    inject: [ConfigService]
 };

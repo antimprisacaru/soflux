@@ -1,20 +1,20 @@
 import { Logger } from '@nestjs/common';
 import User from '../model/user.model';
-import { CloudConfig } from '../../../shared/config/cloud-config';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { UserRepository } from './user.repository';
+import { ConfigService } from "@nestjs/config";
 
 export class AwsUserRepository implements UserRepository {
     private readonly logger = new Logger(AwsUserRepository.name);
     private readonly docClient = new DocumentClient({
-        region: this.config.get['REGION']
+        region: this.configService.get<string>('aws.region')
     });
 
-    constructor(private config: CloudConfig) {}
+    constructor(private configService: ConfigService) {}
 
     async findUser(id: string): Promise<User> {
         return await this.docClient
-            .get({ TableName: 'soflux_users', Key: { id } })
+            .get({ TableName: this.configService.get<string>('aws.usersTable'), Key: { id } })
             .promise()
             .then(
                 (result): User => ({
@@ -33,7 +33,7 @@ export class AwsUserRepository implements UserRepository {
     async findUserByEmail(email: string): Promise<User> {
         return await this.docClient
             .scan({
-                TableName: 'soflux_users',
+                TableName: this.configService.get<string>('aws.usersTable'),
                 FilterExpression: 'email = :email',
                 ExpressionAttributeValues: { ':email': email }
             })
@@ -47,7 +47,7 @@ export class AwsUserRepository implements UserRepository {
 
     // async fetchSocialAccounts(): Promise<socialAccountModel[]> {
     //   return await this.docClient
-    //     .scan({ TableName: 'soflux_users' })
+    //     .scan({ TableName: this.config.get('usersTable') })
     //     .promise()
     //     .then(result => (result.Items[0] as User).socialAccounts)
     //     .catch(err => {
@@ -57,10 +57,11 @@ export class AwsUserRepository implements UserRepository {
     // }
 
     async saveUser(user: User): Promise<User> {
+        this.logger.log(this.configService.get<string>('aws.usersTable'));
         await this.docClient
             .put(
                 {
-                    TableName: 'soflux_users',
+                    TableName: this.configService.get<string>('aws.usersTable'),
                     Item: user
                 },
                 err => {

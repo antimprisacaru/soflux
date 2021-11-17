@@ -1,12 +1,12 @@
 import { Logger } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import User from '../model/user.model';
-import { CloudConfig } from '../../../shared/config/cloud-config';
+import { ConfigService } from "@nestjs/config";
 
 export class GoogleUserRepository implements UserRepository {
     logger = Logger;
 
-    constructor(private config: CloudConfig) {}
+    constructor(private configService: ConfigService) {}
 
     findUser(id: string): Promise<User> {
         return Promise.resolve(undefined);

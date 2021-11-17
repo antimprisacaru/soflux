@@ -1,4 +1,15 @@
 SofluxCognitoUserPool:
   Type: AWS::Cognito::UserPool
   Properties:
-    UserPoolName: SofluxUserPool-${sls:stage}
+    UserPoolName: SofluxUserPool-${opt:stage, 'dev'}
+    UsernameAttributes:
+      - email
+    AdminCreateUserConfig:
+      AllowAdminCreateUserOnly: true
+    Policies:
+      PasswordPolicy:
+        MinimumLength: 6
+        RequireLowercase: False
+        RequireNumbers: False
+        RequireSymbols: False
+        RequireUppercase: False

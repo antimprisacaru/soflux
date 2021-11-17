@@ -10,10 +10,7 @@ provider:
     apiGateway: true
   runtime: nodejs12.x
   memorySize: 256
-  stage: ${env:STAGE}
   region: eu-central-1
-  environment:
-    USERS_TABLE_NAME: ${self:resources.SofluxUsersTable.name}
   iamRoleStatements:
     - ${file(resources/dynamo-db-table-iam.yml):DynamoDBTableIAM}
 

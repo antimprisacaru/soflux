@@ -1,9 +1,7 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
-export class UserRegistrationInputType {
-    @Field({ nullable: true })
-    id: string;
+export class UserRegistrationInputDto {
     @Field()
     email: string;
     @Field()
