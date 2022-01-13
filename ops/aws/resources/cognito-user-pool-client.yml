@@ -1,9 +1,0 @@
-SofluxCognitoUserPoolClient:
-  Type: AWS::Cognito::UserPoolClient
-  Properties:
-    ClientName: SofluxUserPoolClient-${opt:stage, 'dev'}
-    ExplicitAuthFlows: ["USER_PASSWORD_AUTH"]
-    RefreshTokenValidity: 30
-    GenerateSecret: false
-    UserPoolId:
-      Ref: "SofluxCognitoUserPool"

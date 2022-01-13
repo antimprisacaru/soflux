@@ -14,7 +14,7 @@ import { IdentityProviderFactory } from '../../shared/identity-provider/identity
         JwtModule.registerAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET')
+                secret: configService.get<string>('jwt_secret')
             }),
             inject: [ConfigService]
         })

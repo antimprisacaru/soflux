@@ -1,9 +1,9 @@
-import { readFileSync } from 'fs';
-import * as yaml from 'js-yaml';
-import { join } from 'path';
+const env = process.env;
 
-const YAML_CONFIG_FILENAME = 'config.yml';
-
-export function cloudConfig() {
-    return yaml.load(readFileSync(join(__dirname, process.env.CLOUD_PROVIDER + '.' + YAML_CONFIG_FILENAME), 'utf8')) as Record<string, any>;
-}
+export default () => ({
+  provider: env.PROVIDER,
+  aws: {
+    cognitoClientId: env.AWS_COGNITO_CLIENT_ID,
+    cognitoUserPoolId: env.AWS_COGNITO_USER_POOL_ID
+  }
+});

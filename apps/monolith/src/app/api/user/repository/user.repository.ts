@@ -13,7 +13,7 @@ export interface UserRepository {
 export const UserRepositoryFactory = {
     provide: 'UserRepository',
     useFactory: (configService: ConfigService) => {
-        switch (configService.get<string>('cloud_provider')) {
+        switch (configService.get<string>('cloud.provider')) {
             case 'aws':
                 return new AwsUserRepository(configService);
             case 'google':

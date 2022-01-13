@@ -13,7 +13,7 @@ export interface IdentityProvider {
 export const IdentityProviderFactory = {
     provide: 'IdentityProvider',
     useFactory: (configService: ConfigService) => {
-        switch (configService.get<string>('cloud_provider')) {
+        switch (configService.get<string>('cloud.provider')) {
             case 'aws':
                 return new AwsIdentityProvider(configService);
             case 'google':

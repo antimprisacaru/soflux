@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 export class AwsIdentityProvider implements IdentityProvider {
     private readonly logger = new Logger(AwsIdentityProvider.name);
     private cognitoIdentityProvider = new CognitoIdentityServiceProvider({
-        region: this.configService.get<string>('aws.region')
+        region: 'eu-central-1'
     });
 
     constructor(private configService: ConfigService) {}
@@ -26,7 +26,7 @@ export class AwsIdentityProvider implements IdentityProvider {
         return await this.cognitoIdentityProvider
             .initiateAuth({
                 AuthFlow: 'USER_PASSWORD_AUTH',
-                ClientId: this.configService.get<string>('aws.clientId'),
+                ClientId: this.configService.get<string>('cloud.aws.cognitoClientId'),
                 AuthParameters: {
                     USERNAME: email,
                     PASSWORD: password
@@ -43,7 +43,7 @@ export class AwsIdentityProvider implements IdentityProvider {
     async signUp(username: string, password: string): Promise<void> {
         await this.cognitoIdentityProvider
             .adminCreateUser({
-                UserPoolId: this.configService.get<string>('aws.userPoolId'),
+                UserPoolId: this.configService.get<string>('cloud.aws.cognitoUserPoolId'),
                 Username: `${username}`
             })
             .promise()
@@ -60,7 +60,7 @@ export class AwsIdentityProvider implements IdentityProvider {
                 Username: `${id}`,
                 Permanent: true,
                 Password: password,
-                UserPoolId: this.configService.get<string>('aws.userPoolId')
+                UserPoolId: this.configService.get<string>('cloud.aws.cognitoUserPoolId')
             })
             .promise()
             .catch(err => {

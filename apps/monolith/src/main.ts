@@ -8,6 +8,9 @@ import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-win
 import winston from 'winston';
 import { Logger } from '@nestjs/common';
 
+// eslint-disable-next-line
+var server;
+
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
         logger: WinstonModule.createLogger({
@@ -29,10 +32,10 @@ async function bootstrap() {
         allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
     });
     app.use(cookieParser());
-    const port = process.env.monolith_port || 3333;
+    const port = config.get<number>('monolith_port') || 3333;
     await app.listen(port, () => {
         Logger.log('Listening at http://localhost:' + port);
-        Logger.log(`Running in ${config.get('environment')} mode`);
+        Logger.log(`Running in ${config.get<string>('env')} mode`);
     });
 }
 
@@ -41,13 +44,15 @@ if (process.env.NX_CLI_SET) {
     bootstrap();
 }
 
-// TODO: move this to lambda.handler.ts once multiple entrypoint config for webpack is done
 export const handler: APIGatewayProxyHandler = async (event, context) => {
-    const app = new ServerlessNestjsApplicationFactory<AppModule>(AppModule, {
-        cors: {
-            origin: '*',
-            allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
-        }
-    });
-    return await app.run(event, context);
+    if (!server) {
+        server = new ServerlessNestjsApplicationFactory<AppModule>(AppModule, {
+            cors: {
+                origin: '*',
+                credentials: true,
+                allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
+            }
+        });
+    }
+    return await server.run(event, context);
 };

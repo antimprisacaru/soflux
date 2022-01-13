@@ -1,9 +1,10 @@
 import * as gulp from 'gulp';
 import minimist = require('minimist');
-import serverlessDeploy from './serverless-deploy';
+import deploy from './deploy';
 import serveClient from './serve-client';
 import serveMonolith from './serve-monolith';
 import buildMonolith from "./build-monolith";
+import buildClient from "./build-client";
 
 /* serverless:deploy */
 
@@ -12,21 +13,20 @@ const serverless_DEPLOY_OPTIONS: minimist.Opts = {
     boolean: ['skip-build'],
     default: {
         provider: 'aws',
-        stage: 'develop',
+        stage: 'dev',
         'skip-build': false
     }
 };
-function serverlessDeployTask(): Promise<void> {
+function deployTask(): Promise<void> {
     const options = minimist(process.argv.slice(2), serverless_DEPLOY_OPTIONS);
-    return serverlessDeploy(options.provider, options.stage, options['skip-build']);
+    return deploy(options.provider, options.stage);
 }
-serverlessDeployTask.description = 'Run serverless';
-serverlessDeployTask.flags = {
+deployTask.description = 'Run deploy command';
+deployTask.flags = {
     '--provider': 'Cloud provider: AWS or Google.',
-    '--stage': `'dev' / 'test' / 'prod'`,
-    '--skip-build': 'Will use last built distribution.'
+    '--stage': `'dev' / 'test' / 'prod'`
 };
-gulp.task('serverless:deploy', serverlessDeployTask);
+gulp.task('deploy', deployTask);
 
 /* serve:client */
 
@@ -64,3 +64,11 @@ function buildMonolithTask(): Promise<void> {
 }
 buildMonolithTask.description = 'Build monolith';
 gulp.task('build:monolith', buildMonolithTask);
+
+
+/* build:client */
+function buildClientTask(): Promise<void>{
+  return buildClient();
+}
+buildClientTask.description = 'Build client';
+gulp.task('build:client', buildClientTask);

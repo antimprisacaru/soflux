@@ -41,3 +41,6 @@ libs/core/src/lib/env/aws.config.yml
 .DS_Store
 Thumbs.db
 /libs/core/src/lib/env/
+/ops/aws/lambda/dist/
+/ops/**/.terraform
+/ops/**/.terraform.lock.hcl

@@ -10,7 +10,7 @@
                 "outputPath": "dist/apps/monolith",
                 "main": "apps/monolith/src/main.ts",
                 "tsConfig": "apps/monolith/tsconfig.app.json",
-                "assets": ["apps/monolith/src/assets"]
+                "webpackConfig": "webpack.config.js"
             },
             "configurations": {
                 "production": {
