@@ -44,3 +44,4 @@ Thumbs.db
 /ops/aws/lambda/dist/
 /ops/**/.terraform
 /ops/**/.terraform.lock.hcl
+/.angular
