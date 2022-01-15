@@ -45,3 +45,4 @@ Thumbs.db
 /ops/**/.terraform
 /ops/**/.terraform.lock.hcl
 /.angular
+test

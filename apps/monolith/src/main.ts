@@ -8,8 +8,7 @@ import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-win
 import winston from 'winston';
 import { Logger } from '@nestjs/common';
 
-// eslint-disable-next-line
-var server;
+let server;
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
@@ -51,8 +50,20 @@ export const handler: APIGatewayProxyHandler = async (event, context) => {
                 origin: '*',
                 credentials: true,
                 allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept'
-            }
+            },
+            logger: WinstonModule.createLogger({
+                transports: [
+                    new winston.transports.Console({
+                        format: winston.format.combine(
+                            winston.format.timestamp(),
+                            winston.format.ms(),
+                            nestWinstonModuleUtilities.format.nestLike('Soflux Monolith', { prettyPrint: true })
+                        )
+                    })
+                ]
+            })
         });
+        server.use(cookieParser());
     }
     return await server.run(event, context);
 };

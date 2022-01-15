@@ -1,16 +1,29 @@
+resource "aws_s3_bucket" "logs_bucket" {
+  bucket_prefix = "cf-logs-${var.stage}"
+  acl           = "private"
+}
+
 resource "aws_cloudfront_distribution" "soflux_distribution" {
   origin {
-    domain_name = aws_s3_bucket.client_bucket.bucket_regional_domain_name
+    domain_name = aws_s3_bucket.client_bucket.website_endpoint
     origin_id   = "client"
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "http-only"
+      origin_ssl_protocols   = ["TLSv1","TLSv1.1"]
+    }
   }
 
   origin {
     domain_name = "${aws_api_gateway_rest_api.soflux.id}.execute-api.eu-central-1.amazonaws.com"
+    origin_path = "/${var.stage}/graphql"
     origin_id = "monolith"
 
     custom_origin_config {
-      http_port              = 3000
-      https_port             = 3000
+      http_port              = 80
+      https_port             = 443
       origin_protocol_policy = "https-only"
       origin_ssl_protocols   = ["TLSv1","TLSv1.1"]
     }
@@ -69,9 +82,15 @@ resource "aws_cloudfront_distribution" "soflux_distribution" {
     }
   }
 
+  logging_config {
+    include_cookies = true
+    bucket          = aws_s3_bucket.logs_bucket.bucket_domain_name
+    prefix          = "cloudfront_logs"
+  }
+
   viewer_certificate {
     cloudfront_default_certificate = true
   }
 
-  depends_on = [aws_api_gateway_integration.soflux, aws_s3_bucket_object.file]
+  depends_on = [aws_api_gateway_integration.lambda, aws_api_gateway_integration.lambda_root, aws_s3_bucket_object.file]
 }

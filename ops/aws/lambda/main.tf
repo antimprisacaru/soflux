@@ -58,11 +58,24 @@ data "aws_iam_policy_document" "lambda_basic" {
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "logs:PutLogEvents",
+      "logs:DescribeLogStreams",
+      "dynamodb:BatchGet*",
+      "dynamodb:DescribeStream",
+      "dynamodb:DescribeTable",
+      "dynamodb:Get*",
+      "dynamodb:Query",
+      "dynamodb:Scan",
+      "dynamodb:BatchWrite*",
+      "dynamodb:CreateTable",
+      "dynamodb:Delete*",
+      "dynamodb:Update*",
+      "dynamodb:PutItem"
     ]
 
     resources = [
-      "arn:aws:lambda:*"
+      "arn:aws:logs:*:*:*",
+      "arn:aws:dynamodb:*:*:*"
     ]
   }
 }

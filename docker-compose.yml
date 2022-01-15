@@ -1,0 +1,6 @@
+version: '3'
+services:
+  soflux-monolith:
+    image: soflux-monolith
+    ports:
+      - 3000:3000

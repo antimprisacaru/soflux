@@ -11,5 +11,5 @@ output "aws_cognito_client_pool_id" {
 }
 
 output "deployment" {
-  value = aws_cloudfront_distribution.soflux_distribution.id
+  value = "https://${aws_cloudfront_distribution.soflux_distribution.id}.cloudfront.net"
 }

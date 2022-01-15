@@ -9,7 +9,9 @@ export class AwsIdentityProvider implements IdentityProvider {
         region: 'eu-central-1'
     });
 
-    constructor(private configService: ConfigService) {}
+    constructor(private configService: ConfigService) {
+      this.cognitoIdentityProvider.updateIdentityProvider();
+    }
 
     async getUser(accessToken: string): Promise<string> {
         return await this.cognitoIdentityProvider
