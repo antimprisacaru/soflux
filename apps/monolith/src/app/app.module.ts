@@ -10,8 +10,7 @@ import { GraphQLModule } from '@nestjs/graphql';
             autoSchemaFile: true,
             sortSchema: true,
             context: ({ req, res }) => ({ req, res }),
-            debug: !!process.env.NX_CLI_SET,
-            playground: !!process.env.NX_CLI_SET
+            debug: !!process.env.NX_CLI_SET
         }),
         CoreModule,
         ApiModule

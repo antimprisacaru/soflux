@@ -4,8 +4,10 @@ import { onError } from '@apollo/client/link/error';
 import { Store } from '@ngrx/store';
 import { State } from '../../state';
 import { HttpError } from '../errors/errors.actions';
+import { setContext } from "@apollo/client/link/context";
 
 const ignoredErrors = ['getUser'];
+const AUTH_TOKEN = 'authorization';
 
 @Injectable()
 export class GraphQLService {
@@ -18,14 +20,14 @@ export class GraphQLService {
     init(): void {
         const httpLink = createHttpLink({
             uri: '/graphql',
-            credentials: 'include'
+            credentials: 'include',
         });
 
         const errorLink = onError(({ graphQLErrors, networkError }) => {
             if (graphQLErrors) {
                 graphQLErrors.map(({ message, path, extensions }) => {
                     if (extensions.code === 'UNAUTHENTICATED') {
-                      return;
+                        return;
                     }
                     if (!ignoredErrors.find(err => err === path[0])) {
                         this.store.dispatch(new HttpError(message));
@@ -38,7 +40,39 @@ export class GraphQLService {
             }
         });
 
-        const link = ApolloLink.from([errorLink.concat(httpLink)]);
+        const auth = setContext(() => {
+            const token = localStorage.getItem(AUTH_TOKEN);
+
+            if (token === null) {
+                return {};
+            } else {
+                return {
+                    headers: {
+                        Authorization: token
+                    }
+                };
+            }
+        });
+
+      const afterwareLink = new ApolloLink((operation, forward) => {
+        return forward(operation).map(response => {
+          const context = operation.getContext()
+          const {
+            response: { headers }
+          } = context
+
+          if (headers) {
+            const authToken = headers.get('Authorization') || headers.get('x-amzn-remapped-authorization')
+            if (authToken) {
+              localStorage.setItem(AUTH_TOKEN, authToken)
+            }
+          }
+
+          return response
+        })
+      })
+
+        const link = ApolloLink.from([afterwareLink, auth, errorLink, httpLink]);
 
         this.client = new ApolloClient({
             link,

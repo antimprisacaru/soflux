@@ -12,20 +12,20 @@ resource "aws_cloudfront_distribution" "soflux_distribution" {
       http_port              = 80
       https_port             = 443
       origin_protocol_policy = "http-only"
-      origin_ssl_protocols   = ["TLSv1","TLSv1.1"]
+      origin_ssl_protocols   = ["TLSv1", "TLSv1.1"]
     }
   }
 
   origin {
     domain_name = "${aws_api_gateway_rest_api.soflux.id}.execute-api.eu-central-1.amazonaws.com"
     origin_path = "/${var.stage}/graphql"
-    origin_id = "monolith"
+    origin_id   = "monolith"
 
     custom_origin_config {
       http_port              = 80
       https_port             = 443
       origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1","TLSv1.1"]
+      origin_ssl_protocols   = ["TLSv1", "TLSv1.1"]
     }
   }
 
@@ -39,6 +39,7 @@ resource "aws_cloudfront_distribution" "soflux_distribution" {
     target_origin_id = "client"
 
     forwarded_values {
+      headers      = ["Authorization"]
       query_string = false
 
       cookies {
@@ -48,8 +49,8 @@ resource "aws_cloudfront_distribution" "soflux_distribution" {
 
     viewer_protocol_policy = "allow-all"
     min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
+    default_ttl            = 0
+    max_ttl                = 0
   }
 
   ordered_cache_behavior {
@@ -60,7 +61,7 @@ resource "aws_cloudfront_distribution" "soflux_distribution" {
 
     forwarded_values {
       query_string = false
-      headers      = ["Origin"]
+      headers      = ["Origin", "Authorization"]
 
       cookies {
         forward = "none"
@@ -68,8 +69,8 @@ resource "aws_cloudfront_distribution" "soflux_distribution" {
     }
 
     min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 31536000
+    default_ttl            = 0
+    max_ttl                = 0
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
   }
@@ -92,5 +93,9 @@ resource "aws_cloudfront_distribution" "soflux_distribution" {
     cloudfront_default_certificate = true
   }
 
-  depends_on = [aws_api_gateway_integration.lambda, aws_api_gateway_integration.lambda_root, aws_s3_bucket_object.file]
+  depends_on = [
+    aws_api_gateway_integration.lambda,
+    aws_api_gateway_integration.lambda_root,
+    aws_s3_bucket_object.file
+  ]
 }

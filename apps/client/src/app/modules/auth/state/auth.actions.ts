@@ -11,6 +11,7 @@ export enum AuthActionTypes {
     USER_REGISTER_CONFIRM_SUCCESS = '[Auth] Register Confirm Success',
     LOAD_USER = '[Auth] Load User',
     LOAD_USER_SUCCESS = '[Auth] Load User Success',
+    LOAD_USER_FAILURE = '[Auth] Load User Failure',
     LOGOUT_USER = '[Auth] Logout',
     LOGOUT_USER_SUCCESS = '[Auth] Logout Success'
 }
@@ -55,6 +56,10 @@ export class LoadUserSuccess implements Action {
     constructor(public payload: User) {}
 }
 
+export class LoadUserFailure implements Action {
+    readonly type = AuthActionTypes.LOAD_USER_FAILURE;
+}
+
 export class LogoutUser implements Action {
     readonly type = AuthActionTypes.LOGOUT_USER;
 }
@@ -72,5 +77,6 @@ export type AuthActionsUnion =
     | UserRegisterConfirmSuccess
     | LoadUser
     | LoadUserSuccess
+    | LoadUserFailure
     | LogoutUser
     | LogoutUserSuccess;

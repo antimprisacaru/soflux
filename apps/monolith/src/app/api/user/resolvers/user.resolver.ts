@@ -24,7 +24,7 @@ export class UserResolver {
     @Mutation(() => Boolean, { nullable: true })
     async login(@Args('email') email: string, @Args('password') password: string, @Context() ctx: any): Promise<void> {
         this.logger.log('Login resolver.');
-        ctx.res.cookie('token', this.jwt.sign(await this.userService.login(email, password)));
+        ctx.res.setHeader('Authorization', `Bearer ${this.jwt.sign(await this.userService.login(email, password))}`);
     }
 
     @Mutation(() => Boolean, { nullable: true })

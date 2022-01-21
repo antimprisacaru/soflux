@@ -60,6 +60,11 @@ data "aws_iam_policy_document" "lambda_basic" {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
       "logs:DescribeLogStreams",
+      "cognito-idp:AdminCreateUser",
+      "cognito-idp:AdminDeleteUser",
+      "cognito-idp:AdminSetUserPassword",
+      "cognito-idp:InitiateAuth",
+      "cognito-idp:GetUser",
       "dynamodb:BatchGet*",
       "dynamodb:DescribeStream",
       "dynamodb:DescribeTable",
@@ -75,7 +80,8 @@ data "aws_iam_policy_document" "lambda_basic" {
 
     resources = [
       "arn:aws:logs:*:*:*",
-      "arn:aws:dynamodb:*:*:*"
+      "arn:aws:dynamodb:*:*:*",
+      "arn:aws:cognito-idp:*:*:*"
     ]
   }
 }

@@ -3,6 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {
     AuthActionTypes,
     LoadUser,
+    LoadUserFailure,
     LoadUserSuccess,
     LogoutUser,
     LogoutUserSuccess,
@@ -26,8 +27,22 @@ export class AuthEffects {
     loadUser$ = createEffect(() =>
         this.actions$.pipe(
             ofType<LoadUser>(AuthActionTypes.LOAD_USER),
-            switchMap(() => this.authService.getUser().then(res => new LoadUserSuccess(res)))
+            switchMap(() =>
+                this.authService
+                    .getUser()
+                    .then(res => new LoadUserSuccess(res))
+                    .catch(() => new LoadUserFailure())
+            )
         )
+    );
+
+    loadUserFailed$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType<LoadUserFailure>(AuthActionTypes.LOAD_USER_FAILURE),
+                tap(() => localStorage.removeItem('authorization'))
+            ),
+        { dispatch: false }
     );
 
     login$ = createEffect(() =>
@@ -101,7 +116,7 @@ export class AuthEffects {
             this.actions$.pipe(
                 ofType<LogoutUserSuccess>(AuthActionTypes.LOGOUT_USER_SUCCESS),
                 tap(async () => {
-                    localStorage.removeItem('token');
+                    localStorage.removeItem('authorization');
                     return this.router.navigate(['/auth/login']);
                 })
             ),
