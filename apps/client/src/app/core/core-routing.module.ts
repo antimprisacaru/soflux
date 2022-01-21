@@ -32,6 +32,10 @@ const routes: Routes = [
                 loadChildren: () => import('../modules/messenger/messenger.module').then(m => m.MessengerModule),
                 canActivate: [AuthGuard]
             },
+            {
+                path: 'static',
+                loadChildren: () => import('../modules/static/static.module').then(m => m.StaticModule)
+            },
             { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
         ]
     }
