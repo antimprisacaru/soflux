@@ -3,7 +3,7 @@ import { UserRepository } from './user.repository';
 import User from '../model/user.model';
 import { ConfigService } from "@nestjs/config";
 
-export class GoogleUserRepository implements UserRepository {
+export class GcpUserRepository implements UserRepository {
     logger = Logger;
 
     constructor(private configService: ConfigService) {}

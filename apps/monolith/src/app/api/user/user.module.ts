@@ -8,6 +8,7 @@ import { IdentityProviderFactory } from '../../shared/identity-provider/identity
 
 @Module({
     imports: [ConfigModule, AuthModule],
+    exports: [UserService, UserRepositoryFactory],
     providers: [UserService, UserResolver, UserRepositoryFactory, IdentityProviderFactory]
 })
 export class UserModule {}

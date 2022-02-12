@@ -60,33 +60,20 @@ export class UserService {
         await this.identityProvider.signUp(savedUser.id, user.password);
     }
 
-    async updateUserProfile(user: UserInputDto): Promise<UserDto> {
-        this.logger.log(`Checking if user with id ${user.id} exists.`);
-        let savedUser;
-        try {
-            savedUser = await this.userRepository.findUserByEmail(user.id);
-        } catch (e) {
-            this.logger.log(`No user was found matching the input ID.`);
-            return;
+    async updateUserProfile(accessToken: string, user: UserInputDto): Promise<UserDto> {
+        const savedUser = await this.userRepository.findUser(await this.decodeUserToken(accessToken));
+
+        if (!savedUser) {
+            throw new Error('Could not find user.');
         }
 
-        this.logger.log(`Saving user with id ${user.id}.`);
-        return await this.userRepository.saveUser({ email: savedUser.email, ...user });
+        this.logger.log(`Saving user with id ${savedUser.id}.`);
+        return await this.userRepository.saveUser({ id: savedUser.id, email: savedUser.email, ...user });
     }
 
     async getUser(accessToken: string): Promise<UserDto> {
-        this.logger.log(`Getting credentials.`);
-
-        if (!accessToken) {
-            return null;
-        }
-
-        const decodedAccessToken = this.jwt.decode(accessToken) as string;
-
-        const ipUser = await this.identityProvider.getUser(decodedAccessToken);
-        this.logger.log(`Found user ${ipUser} .`);
-
-        const user = await this.userRepository.findUser(ipUser);
+        this.logger.log(`Getting user information.`);
+        const user = await this.userRepository.findUser(await this.decodeUserToken(accessToken));
 
         return {
             id: user.id,
@@ -102,5 +89,15 @@ export class UserService {
             zip: user.zip,
             role: user.role
         };
+    }
+
+    async decodeUserToken(accessToken: string): Promise<string> {
+        if (!accessToken) {
+            throw new Error('Access token cannot be undefined.');
+        }
+
+        const decodedAccessToken = this.jwt.decode(accessToken) as string;
+
+        return await this.identityProvider.getUser(decodedAccessToken);
     }
 }

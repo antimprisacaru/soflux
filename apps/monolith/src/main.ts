@@ -6,11 +6,13 @@ import serverlessExpress from '@vendia/serverless-express';
 import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { Logger } from '@nestjs/common';
+import ConsoleService from './app/common/console/console.service';
+import { ErrorInterceptor } from './app/common/interceptors/error.interceptor';
 
 let server: Handler;
 
 async function bootstrap(): Promise<any> {
-    return await (
+    const app = await (
         await NestFactory.create(AppModule, {
             logger: WinstonModule.createLogger({
                 transports: [
@@ -29,16 +31,20 @@ async function bootstrap(): Promise<any> {
                 allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
             }
         })
-    ).init();
+    );
+    // app.useGlobalInterceptors(new ErrorInterceptor());
+    return app.init();
 }
 
 async function runLocally(): Promise<void> {
     const app = await bootstrap();
     const config = app.get(ConfigService);
+    const console = app.get(ConsoleService) as ConsoleService;
     const port = config.get('monolith_port') || 3333;
     await app.listen(port, () => {
         Logger.log('Listening at http://localhost:' + port);
         Logger.log(`Running in ${config.get('env')} mode`);
+        console.start();
     });
 }
 

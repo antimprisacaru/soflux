@@ -5,16 +5,19 @@ import { UserRepository } from './user.repository';
 import { ConfigService } from '@nestjs/config';
 
 export class AwsUserRepository implements UserRepository {
+    private readonly tableName: string;
     private readonly logger = new Logger(AwsUserRepository.name);
     private readonly docClient = new DocumentClient({
         region: 'eu-central-1'
     });
 
-    constructor(private configService: ConfigService) {}
+    constructor(private configService: ConfigService) {
+        this.tableName = `soflux-users-${this.configService.get<string>('env')}`;
+    }
 
     async findUser(id: string): Promise<User> {
         return await this.docClient
-            .get({ TableName: `soflux-users-${this.configService.get<string>('env')}`, Key: { id } })
+            .get({ TableName: this.tableName, Key: { id } })
             .promise()
             .then(
                 (result): User => ({
@@ -33,7 +36,7 @@ export class AwsUserRepository implements UserRepository {
     async findUserByEmail(email: string): Promise<User> {
         return await this.docClient
             .scan({
-                TableName: `soflux-users-${this.configService.get<string>('env')}`,
+                TableName: this.tableName,
                 FilterExpression: 'email = :email',
                 ExpressionAttributeValues: { ':email': email }
             })
@@ -47,7 +50,7 @@ export class AwsUserRepository implements UserRepository {
 
     // async fetchSocialAccounts(): Promise<socialAccountModel[]> {
     //   return await this.docClient
-    //     .scan({ TableName: this.config.get('usersTable') })
+    //     .scan({ TableName: this.tableName })
     //     .promise()
     //     .then(result => (result.Items[0] as User).socialAccounts)
     //     .catch(err => {
@@ -57,11 +60,10 @@ export class AwsUserRepository implements UserRepository {
     // }
 
     async saveUser(user: User): Promise<User> {
-        this.logger.log(`soflux-users-${this.configService.get<string>('env')}`);
         await this.docClient
             .put(
                 {
-                    TableName: `soflux-users-${this.configService.get<string>('env')}`,
+                    TableName: this.tableName,
                     Item: user
                 },
                 err => {
@@ -76,6 +78,22 @@ export class AwsUserRepository implements UserRepository {
     }
 
     async removeAll(): Promise<void> {
-        this.logger.log('pula inca');
+        await this.docClient
+            .scan({ TableName: this.tableName })
+            .promise()
+            .then(result =>
+                result.Items.forEach(user =>
+                    this.docClient
+                        .delete({
+                            TableName: this.tableName,
+                            Key: { id: user.id }
+                        })
+                        .promise()
+                        .catch(e => {
+                            this.logger.error(e);
+                            throw new Error(e);
+                        })
+                )
+            );
     }
 }

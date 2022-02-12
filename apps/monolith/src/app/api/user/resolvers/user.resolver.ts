@@ -37,13 +37,13 @@ export class UserResolver {
     @Mutation(() => Boolean, { nullable: true })
     async logout(@Context() ctx: any): Promise<void> {
         this.logger.log('Logout resolver.');
-        ctx.res.cookie('token', undefined);
+        ctx.res.removeHeader('Authorization');
     }
 
     @UseGuards(GqlAuthGuard)
     @Mutation(() => UserDto, { nullable: true })
-    async updateUserProfile(@Args('user') user: UserInputDto): Promise<UserDto> {
+    async updateUserProfile(@UserToken() accessToken: string, @Args('user') user: UserInputDto): Promise<UserDto> {
         this.logger.log('Update user profile resolver.');
-        return await this.userService.updateUserProfile(user);
+        return await this.userService.updateUserProfile(accessToken, user);
     }
 }

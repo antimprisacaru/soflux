@@ -2,14 +2,16 @@ import { SocialPlatform } from '../../../shared/models/social-platform.model';
 
 export default class SocialAccount {
     id: string;
-    username: string;
-    key: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    description: string;
+    handle: string;
+    name: string;
     posts: number;
     followers: number;
-    picture: string;
+    following: number;
+    profilePicture: string;
     platform: SocialPlatform;
+    authToken?: string;
+    refreshToken?: string;
+    refreshEndpoint?: string;
+    tokenExpiresAt?: Date;
+    isFake: boolean;
 }

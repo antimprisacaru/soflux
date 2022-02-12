@@ -1,6 +1,6 @@
 import User from '../model/user.model';
 import { AwsUserRepository } from './aws-user.repository';
-import { GoogleUserRepository } from './google-user.repository';
+import { GcpUserRepository } from './gcp-user.repository';
 import { ConfigService } from '@nestjs/config';
 
 export interface UserRepository {
@@ -16,8 +16,8 @@ export const UserRepositoryFactory = {
         switch (configService.get<string>('cloud.provider')) {
             case 'aws':
                 return new AwsUserRepository(configService);
-            case 'google':
-                return new GoogleUserRepository(configService);
+            case 'gcp':
+                return new GcpUserRepository(configService);
             default:
                 throw new Error(`No repository found corresponding to input given.`);
         }

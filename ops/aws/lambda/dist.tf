@@ -3,6 +3,10 @@ resource "null_resource" "build" {
     working_dir = "${path.module}/../../../"
     command     = var.source_build_script
   }
+
+  triggers = {
+    always_run = timestamp()
+  }
 }
 
 resource "null_resource" "download" {
@@ -14,6 +18,8 @@ resource "null_resource" "download" {
     working_dir = "."
     command     = "aws s3 cp ${path.module}/dist/${var.lambda_name}.zip s3://soflux-lambda/${var.lambda_name}.zip"
   }
+
+  depends_on = null_resource.build
 }
 
 data "archive_file" "lambda" {

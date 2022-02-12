@@ -1,7 +1,7 @@
 import { IdentityProvider } from './identity-provider';
 import { ConfigService } from '@nestjs/config';
 
-export class GoogleIdentityProvider implements IdentityProvider {
+export class GcpIdentityProvider implements IdentityProvider {
     constructor(private configService: ConfigService) {}
 
     getUser(accessToken: string): Promise<string> {

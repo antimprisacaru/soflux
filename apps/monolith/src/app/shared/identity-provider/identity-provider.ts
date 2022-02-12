@@ -1,4 +1,4 @@
-import { GoogleIdentityProvider } from './google-identity-provider';
+import { GcpIdentityProvider } from './gcp-identity-provider';
 import { AwsIdentityProvider } from './aws-identity-provider';
 import { ConfigService } from '@nestjs/config';
 
@@ -16,8 +16,8 @@ export const IdentityProviderFactory = {
         switch (configService.get<string>('cloud.provider')) {
             case 'aws':
                 return new AwsIdentityProvider(configService);
-            case 'google':
-                return new GoogleIdentityProvider(configService);
+            case 'gcp':
+                return new GcpIdentityProvider(configService);
             default:
                 throw new Error(`No repository found corresponding to input given.`);
         }

@@ -4,13 +4,17 @@ import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
 
 export class AwsIdentityProvider implements IdentityProvider {
+    private readonly clientId: string;
+    private readonly userPoolId: string;
     private readonly logger = new Logger(AwsIdentityProvider.name);
     private cognitoIdentityProvider = new CognitoIdentityServiceProvider({
         region: 'eu-central-1'
     });
 
     constructor(private configService: ConfigService) {
-      this.cognitoIdentityProvider.updateIdentityProvider();
+        this.cognitoIdentityProvider.updateIdentityProvider();
+        this.clientId = this.configService.get<string>('cloud.aws.cognitoClientId');
+        this.userPoolId = this.configService.get<string>('cloud.aws.cognitoUserPoolId');
     }
 
     async getUser(accessToken: string): Promise<string> {
@@ -19,7 +23,7 @@ export class AwsIdentityProvider implements IdentityProvider {
             .promise()
             .then(value => value.Username)
             .catch(err => {
-                this.logger.log(err, this);
+                this.logger.log(err);
                 throw new Error('Whoops! An error has occurred!');
             });
     }
@@ -28,7 +32,7 @@ export class AwsIdentityProvider implements IdentityProvider {
         return await this.cognitoIdentityProvider
             .initiateAuth({
                 AuthFlow: 'USER_PASSWORD_AUTH',
-                ClientId: this.configService.get<string>('cloud.aws.cognitoClientId'),
+                ClientId: this.clientId,
                 AuthParameters: {
                     USERNAME: email,
                     PASSWORD: password
@@ -37,7 +41,7 @@ export class AwsIdentityProvider implements IdentityProvider {
             .promise()
             .then(result => result.AuthenticationResult.AccessToken)
             .catch(err => {
-                this.logger.log(err, this);
+                this.logger.log(err);
                 throw new Error('Whoops! An error has occurred!');
             });
     }
@@ -45,12 +49,12 @@ export class AwsIdentityProvider implements IdentityProvider {
     async signUp(username: string, password: string): Promise<void> {
         await this.cognitoIdentityProvider
             .adminCreateUser({
-                UserPoolId: this.configService.get<string>('cloud.aws.cognitoUserPoolId'),
+                UserPoolId: this.userPoolId,
                 Username: `${username}`
             })
             .promise()
             .catch(err => {
-                this.logger.log(err, this);
+                this.logger.log(err);
                 throw new Error('Whoops! An error has occurred!');
             });
         await this.setPassword(username, password);
@@ -62,16 +66,32 @@ export class AwsIdentityProvider implements IdentityProvider {
                 Username: `${id}`,
                 Permanent: true,
                 Password: password,
-                UserPoolId: this.configService.get<string>('cloud.aws.cognitoUserPoolId')
+                UserPoolId: this.userPoolId
             })
             .promise()
             .catch(err => {
-                this.logger.log(err, this);
+                this.logger.log(err);
                 throw new Error('Whoops! An error has occurred!');
             });
     }
 
     async removeAll(): Promise<void> {
-        this.logger.log('Pula inca.', this);
+        await this.cognitoIdentityProvider
+            .listUsers({ UserPoolId: this.userPoolId })
+            .promise()
+            .then(result => {
+                return result.Users.forEach(user =>
+                    this.cognitoIdentityProvider
+                        .adminDeleteUser({
+                            Username: user.Username,
+                            UserPoolId: this.userPoolId
+                        })
+                        .promise()
+                        .catch(e => {
+                            this.logger.error(e);
+                            throw new Error(e);
+                        })
+                );
+            });
     }
 }
