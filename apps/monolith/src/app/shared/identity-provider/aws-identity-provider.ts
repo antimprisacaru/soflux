@@ -23,7 +23,7 @@ export class AwsIdentityProvider implements IdentityProvider {
             .promise()
             .then(value => value.Username)
             .catch(err => {
-                this.logger.log(err);
+                this.logger.error(err);
                 throw new Error('Whoops! An error has occurred!');
             });
     }
@@ -41,7 +41,7 @@ export class AwsIdentityProvider implements IdentityProvider {
             .promise()
             .then(result => result.AuthenticationResult.AccessToken)
             .catch(err => {
-                this.logger.log(err);
+                this.logger.error(err);
                 throw new Error('Whoops! An error has occurred!');
             });
     }
@@ -54,7 +54,7 @@ export class AwsIdentityProvider implements IdentityProvider {
             })
             .promise()
             .catch(err => {
-                this.logger.log(err);
+                this.logger.error(err);
                 throw new Error('Whoops! An error has occurred!');
             });
         await this.setPassword(username, password);
@@ -70,7 +70,7 @@ export class AwsIdentityProvider implements IdentityProvider {
             })
             .promise()
             .catch(err => {
-                this.logger.log(err);
+                this.logger.error(err);
                 throw new Error('Whoops! An error has occurred!');
             });
     }

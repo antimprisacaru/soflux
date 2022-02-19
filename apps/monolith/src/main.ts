@@ -7,7 +7,7 @@ import { utilities as nestWinstonModuleUtilities, WinstonModule } from 'nest-win
 import winston from 'winston';
 import { Logger } from '@nestjs/common';
 import ConsoleService from './app/common/console/console.service';
-import { ErrorInterceptor } from './app/common/interceptors/error.interceptor';
+import { GraphqlInterceptor } from './app/common/interceptors/graphql.interceptor';
 
 let server: Handler;
 
@@ -32,7 +32,7 @@ async function bootstrap(): Promise<any> {
             }
         })
     );
-    // app.useGlobalInterceptors(new ErrorInterceptor());
+    app.useGlobalInterceptors(new GraphqlInterceptor());
     return app.init();
 }
 

@@ -23,7 +23,7 @@ export class UserService {
         this.logger.log(`Searching user with email ${email}.`);
         const savedUser = await this.userRepository.findUserByEmail(email);
 
-        this.logger.log(`Found user`, savedUser, this);
+        this.logger.log({ message: `Found user`, savedUser });
 
         if (!savedUser) {
             throw new Error(`Could not find user with email ${email}.`);
@@ -93,7 +93,7 @@ export class UserService {
 
     async decodeUserToken(accessToken: string): Promise<string> {
         if (!accessToken) {
-            throw new Error('Access token cannot be undefined.');
+            throw new Error('Access token undefined.');
         }
 
         const decodedAccessToken = this.jwt.decode(accessToken) as string;

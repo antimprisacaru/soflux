@@ -28,8 +28,7 @@ export class AwsUserRepository implements UserRepository {
                 })
             )
             .catch(err => {
-                this.logger.log(err, this);
-                throw new Error('Whoops! An error has occurred!');
+                throw err;
             });
     }
 
@@ -43,8 +42,7 @@ export class AwsUserRepository implements UserRepository {
             .promise()
             .then(result => result.Items[0] as User)
             .catch(err => {
-                this.logger.log(this, err);
-                throw new Error('Whoops! An error has occurred!');
+                throw err;
             });
     }
 
@@ -65,15 +63,12 @@ export class AwsUserRepository implements UserRepository {
                 {
                     TableName: this.tableName,
                     Item: user
-                },
-                err => {
-                    if (err) {
-                        this.logger.log(err.message, this);
-                        throw new Error('Whoops! An error has occurred!');
-                    }
                 }
             )
-            .promise();
+            .promise()
+          .catch(err => {
+            throw err;
+          });
         return this.findUser(user.id);
     }
 
@@ -89,9 +84,8 @@ export class AwsUserRepository implements UserRepository {
                             Key: { id: user.id }
                         })
                         .promise()
-                        .catch(e => {
-                            this.logger.error(e);
-                            throw new Error(e);
+                        .catch(err => {
+                            throw err;
                         })
                 )
             );
