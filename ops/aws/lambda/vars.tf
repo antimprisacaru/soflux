@@ -39,3 +39,8 @@ variable "handler_name" {
   type    = string
   default = "index.handler"
 }
+
+variable "stage" {
+  type    = string
+  default = "dev"
+}

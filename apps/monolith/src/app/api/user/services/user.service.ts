@@ -29,8 +29,6 @@ export class UserService {
             throw new Error(`Could not find user with email ${email}.`);
         }
 
-        this.logger.log(savedUser.id, password);
-
         const accessToken = await this.identityProvider.login(savedUser.id, password);
 
         this.logger.log(`Found user and returned token ${accessToken}.`);

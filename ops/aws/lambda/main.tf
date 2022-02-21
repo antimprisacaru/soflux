@@ -75,13 +75,18 @@ data "aws_iam_policy_document" "lambda_basic" {
       "dynamodb:CreateTable",
       "dynamodb:Delete*",
       "dynamodb:Update*",
-      "dynamodb:PutItem"
+      "dynamodb:PutItem",
+      "secretsmanager:GetResourcePolicy",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:ListSecretVersionIds"
     ]
 
     resources = [
       "arn:aws:logs:*:*:*",
       "arn:aws:dynamodb:*:*:*",
-      "arn:aws:cognito-idp:*:*:*"
+      "arn:aws:cognito-idp:*:*:*",
+      "arn:aws:secretsmanager:*:*:*"
     ]
   }
 }

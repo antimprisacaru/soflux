@@ -1,7 +1,3 @@
-output "api" {
-  value = aws_api_gateway_deployment.soflux.invoke_url
-}
-
 output "aws_cognito_user_pool_id" {
   value = aws_cognito_user_pool.main.id
 }

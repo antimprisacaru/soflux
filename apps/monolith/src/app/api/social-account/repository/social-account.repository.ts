@@ -12,13 +12,13 @@ export interface SocialAccountRepository {
 export const SocialAccountFactory = {
     provide: 'SocialAccountRepository',
     useFactory: (configService: ConfigService) => {
-        switch (configService.get<string>('cloud.provider')) {
+        switch (configService.get<string>('provider')) {
             case 'aws':
                 return new AwsSocialAccountRepository(configService);
             case 'gcp':
                 return new GcpSocialAccountRepository(configService);
             default:
-                throw new Error(`No repository found corresponding to input given.`);
+                throw new Error(`No social account repository found corresponding to input given.`);
         }
     },
     inject: [ConfigService]

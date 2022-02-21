@@ -13,13 +13,13 @@ export interface UserRepository {
 export const UserRepositoryFactory = {
     provide: 'UserRepository',
     useFactory: (configService: ConfigService) => {
-        switch (configService.get<string>('cloud.provider')) {
+        switch (configService.get<string>('provider')) {
             case 'aws':
                 return new AwsUserRepository(configService);
             case 'gcp':
                 return new GcpUserRepository(configService);
             default:
-                throw new Error(`No repository found corresponding to input given.`);
+                throw new Error(`No user repository found corresponding to input given.`);
         }
     },
     inject: [ConfigService]

@@ -40,20 +40,17 @@ gulp.task('serve:client', serveClientTask);
 
 const SERVE_MONOLITH_OPTIONS: minimist.Opts = {
     string: ['platform'],
-    boolean: ['sls'],
     default: {
-        platform: 'aws',
-        sls: false
+        platform: 'aws'
     }
 };
 function serveMonolithTask(): Promise<void> {
     const options = minimist(process.argv.slice(2), SERVE_MONOLITH_OPTIONS);
-    return serveMonolith(options.platform, options.sls);
+    return serveMonolith(options.platform);
 }
 serveMonolithTask.description = 'Run monolith';
 serveMonolithTask.flags = {
-    '--platform': 'Cloud provider: AWS or Google.',
-    '--sls': 'Launch monolith as lambda with sls offline.'
+    '--platform': 'Cloud provider: AWS or Google.'
 };
 gulp.task('serve:monolith', serveMonolithTask);
 

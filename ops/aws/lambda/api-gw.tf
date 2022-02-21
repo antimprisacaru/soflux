@@ -1,6 +1,5 @@
 resource "aws_api_gateway_rest_api" "soflux" {
-  name        = "serverless-soflux-${var.stage}"
-  description = "Terraform Serverless Application soflux"
+  name = "${var.lambda_name}-api"
 }
 
 resource "aws_api_gateway_resource" "proxy" {
@@ -23,7 +22,7 @@ resource "aws_api_gateway_integration" "lambda" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = module.monolith.lambda.invoke_arn
+  uri                     = aws_lambda_function.lambda.invoke_arn
 }
 
 resource "aws_api_gateway_method" "proxy_root" {
@@ -40,7 +39,7 @@ resource "aws_api_gateway_integration" "lambda_root" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = module.monolith.lambda.invoke_arn
+  uri                     = aws_lambda_function.lambda.invoke_arn
 }
 
 resource "aws_api_gateway_deployment" "soflux" {
@@ -64,7 +63,7 @@ resource "aws_api_gateway_deployment" "soflux" {
 resource "aws_lambda_permission" "apigw" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = module.monolith.lambda.function_name
+  function_name = aws_lambda_function.lambda.function_name
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.soflux.execution_arn}/*/*"

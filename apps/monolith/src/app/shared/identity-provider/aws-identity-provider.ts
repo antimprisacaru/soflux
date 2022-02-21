@@ -1,11 +1,11 @@
 import { IdentityProvider } from './identity-provider';
 import { Logger } from '@nestjs/common';
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityServiceProvider, SecretsManager } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
 
 export class AwsIdentityProvider implements IdentityProvider {
-    private readonly clientId: string;
-    private readonly userPoolId: string;
+    private clientId: string;
+    private userPoolId: string;
     private readonly logger = new Logger(AwsIdentityProvider.name);
     private cognitoIdentityProvider = new CognitoIdentityServiceProvider({
         region: 'eu-central-1'
@@ -13,8 +13,7 @@ export class AwsIdentityProvider implements IdentityProvider {
 
     constructor(private configService: ConfigService) {
         this.cognitoIdentityProvider.updateIdentityProvider();
-        this.clientId = this.configService.get<string>('cloud.aws.cognitoClientId');
-        this.userPoolId = this.configService.get<string>('cloud.aws.cognitoUserPoolId');
+        this.initSecrets(configService.get<string>('env'));
     }
 
     async getUser(accessToken: string): Promise<string> {
@@ -23,8 +22,7 @@ export class AwsIdentityProvider implements IdentityProvider {
             .promise()
             .then(value => value.Username)
             .catch(err => {
-                this.logger.error(err);
-                throw new Error('Whoops! An error has occurred!');
+                throw new Error(err);
             });
     }
 
@@ -41,8 +39,7 @@ export class AwsIdentityProvider implements IdentityProvider {
             .promise()
             .then(result => result.AuthenticationResult.AccessToken)
             .catch(err => {
-                this.logger.error(err);
-                throw new Error('Whoops! An error has occurred!');
+                throw new Error(err);
             });
     }
 
@@ -54,8 +51,7 @@ export class AwsIdentityProvider implements IdentityProvider {
             })
             .promise()
             .catch(err => {
-                this.logger.error(err);
-                throw new Error('Whoops! An error has occurred!');
+                throw new Error(err);
             });
         await this.setPassword(username, password);
     }
@@ -70,8 +66,7 @@ export class AwsIdentityProvider implements IdentityProvider {
             })
             .promise()
             .catch(err => {
-                this.logger.error(err);
-                throw new Error('Whoops! An error has occurred!');
+                throw new Error(err);
             });
     }
 
@@ -88,10 +83,23 @@ export class AwsIdentityProvider implements IdentityProvider {
                         })
                         .promise()
                         .catch(e => {
-                            this.logger.error(e);
                             throw new Error(e);
                         })
                 );
             });
+    }
+
+    private async initSecrets(env: string): Promise<void> {
+        const secretsManager = new SecretsManager({
+            region: 'eu-central-1'
+        });
+        this.clientId = await secretsManager
+            .getSecretValue({ SecretId: `cognito-client-id-${env}` })
+            .promise()
+            .then(data => data.SecretString);
+        this.userPoolId = await secretsManager
+            .getSecretValue({ SecretId: `cognito-user-pool-id-${env}` })
+            .promise()
+            .then(data => data.SecretString);
     }
 }

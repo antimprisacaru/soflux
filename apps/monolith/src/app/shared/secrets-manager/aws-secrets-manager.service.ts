@@ -1,12 +1,11 @@
 import { SecretsManagerService } from './secrets-manager.service';
 import { InstagramSecret } from '../models/instagram-secret.model';
-import { ConfigService } from '@nestjs/config';
 import { SecretsManager } from 'aws-sdk';
 
 export class AwsSecretsManagerService implements SecretsManagerService {
     manager: SecretsManager;
 
-    constructor(private readonly configService: ConfigService) {
+    constructor() {
         this.manager = new SecretsManager({
             region: 'eu-central-1'
         });

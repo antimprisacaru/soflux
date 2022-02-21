@@ -5,18 +5,19 @@ import { GcpSecretsManagerService } from './gcp-secrets.manager.service';
 
 export interface SecretsManagerService {
     getInstagramSecret(): Promise<InstagramSecret>;
+    getSecret<T extends string | object>(key: string): Promise<T>;
 }
 
 export const SecretsManagerFactory = {
     provide: 'SecretsManagerService',
     useFactory: (configService: ConfigService) => {
-        switch (configService.get<string>('cloud.provider')) {
+        switch (configService.get<string>('provider')) {
             case 'aws':
-                return new AwsSecretsManagerService(configService);
+                return new AwsSecretsManagerService();
             case 'gcp':
-                return new GcpSecretsManagerService(configService);
+                return new GcpSecretsManagerService();
             default:
-                throw new Error(`No repository found corresponding to input given.`);
+                throw new Error(`No secrets manager found corresponding to input given.`);
         }
     },
     inject: [ConfigService]

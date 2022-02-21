@@ -2,6 +2,7 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } fr
 import { Observable } from 'rxjs';
 import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
 import { v4 as uuidv4 } from 'uuid';
+import { omit } from 'lodash';
 
 @Injectable()
 export class GraphqlInterceptor implements NestInterceptor {
@@ -14,11 +15,12 @@ export class GraphqlInterceptor implements NestInterceptor {
             const parentType = info.parentType.name;
             const fieldName = info.fieldName;
             const request = `GraphQL ${parentType} - ${fieldName}`;
-
+            const vars = info.variableValues ? omit(info.variableValues, ['password']) : undefined;
 
             this.logger.log({
-              message: `RequestId: ${ uuidv4() }`,
-              request
+                message: `RequestId: ${uuidv4()}`,
+                request,
+                vars
             });
 
             return next.handle();

@@ -9,19 +9,6 @@ resource "null_resource" "build" {
   }
 }
 
-resource "null_resource" "download" {
-  triggers = {
-    build_number = timestamp()
-  }
-
-  provisioner "local-exec" {
-    working_dir = "."
-    command     = "aws s3 cp ${path.module}/dist/${var.lambda_name}.zip s3://soflux-lambda/${var.lambda_name}.zip"
-  }
-
-  depends_on = null_resource.build
-}
-
 data "archive_file" "lambda" {
   type        = "zip"
   source_dir  = "./../../dist/${var.source_path}"
@@ -32,6 +19,21 @@ data "archive_file" "lambda" {
   ]
 }
 
+resource "null_resource" "download" {
+  triggers = {
+    build_number = timestamp()
+  }
+
+  provisioner "local-exec" {
+    working_dir = "."
+    command     = "aws s3 cp ${path.module}/dist/${var.lambda_name}.zip s3://soflux-lambda/${var.lambda_name}.zip"
+  }
+
+  depends_on = [
+    data.archive_file.lambda
+  ]
+}
+
 resource "aws_s3_bucket_object" "lambda_source" {
   bucket = local.source_bucket
   key    = "${var.lambda_name}.zip"
@@ -39,9 +41,7 @@ resource "aws_s3_bucket_object" "lambda_source" {
   etag   = timestamp()
 
   depends_on = [
-    null_resource.build,
-    null_resource.download,
-    data.archive_file.lambda
+    null_resource.download
   ]
 }
 

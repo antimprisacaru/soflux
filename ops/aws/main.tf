@@ -15,6 +15,7 @@ module "monolith" {
     AWS_COGNITO_CLIENT_ID    = aws_cognito_user_pool_client.main.id
   }
   set_environment_variables = true
+  stage                     = var.stage
 }
 
 data "aws_caller_identity" "caller" {}

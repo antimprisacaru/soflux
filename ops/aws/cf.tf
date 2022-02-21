@@ -17,7 +17,7 @@ resource "aws_cloudfront_distribution" "soflux_distribution" {
   }
 
   origin {
-    domain_name = "${aws_api_gateway_rest_api.soflux.id}.execute-api.eu-central-1.amazonaws.com"
+    domain_name = "${module.monolith.api_id}.execute-api.eu-central-1.amazonaws.com"
     origin_path = "/${var.stage}/graphql"
     origin_id   = "monolith"
 
@@ -94,8 +94,7 @@ resource "aws_cloudfront_distribution" "soflux_distribution" {
   }
 
   depends_on = [
-    aws_api_gateway_integration.lambda,
-    aws_api_gateway_integration.lambda_root,
+    module.monolith,
     aws_s3_bucket_object.file
   ]
 }

@@ -13,13 +13,13 @@ export interface IdentityProvider {
 export const IdentityProviderFactory = {
     provide: 'IdentityProvider',
     useFactory: (configService: ConfigService) => {
-        switch (configService.get<string>('cloud.provider')) {
+        switch (configService.get<string>('provider')) {
             case 'aws':
                 return new AwsIdentityProvider(configService);
             case 'gcp':
                 return new GcpIdentityProvider(configService);
             default:
-                throw new Error(`No repository found corresponding to input given.`);
+                throw new Error(`No Identity Provider found corresponding to input given.`);
         }
     },
     inject: [ConfigService]
